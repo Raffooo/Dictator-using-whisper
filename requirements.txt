@@ -1,0 +1,6 @@
+numpy
+whisper
+sounddevice
+wavio
+pynput
+tkinter

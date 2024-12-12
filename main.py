@@ -6,17 +6,44 @@ import threading
 from pynput import keyboard
 from pynput.keyboard import Controller
 import time
+import tkinter as tk
 
 recording = False
 recordingThread = None
 stopRecording = threading.Event()
 keyboardPresser = Controller()
 model = whisper.load_model("turbo", device="cuda")
+# ^ comment to save RAM while not transcribing ^
+
+# use tkinter to add a red 'recording' icon in the top left
+root = tk.Tk()
+root.overrideredirect(True)
+root.attributes("-topmost", True)  # always on top
+root.configure(bg="white")  # white background that is then made transparent
+root.wm_attributes("-transparentcolor", "white")
+
+# position in the top left corner
+root.geometry("+0+0")
+
+red_dot = tk.Label(root, text="●", fg="red", bg="white", font=("Arial", 30))
+red_dot.pack()
+
+root.withdraw()
+
+def showRecordingIndicator():
+    root.after(0, lambda: root.deiconify())
+
+def hideRecordingIndicator():
+    root.after(0, lambda: root.withdraw())
+
+
+#####################################################################
 
 
 def simulateKeypress(key):
     keyboardPresser.press(key)
     keyboardPresser.release(key)
+    time.sleep(0.01) # to give a nice 'typing' effect
 
 
 def transcribeAudio():
@@ -24,6 +51,7 @@ def transcribeAudio():
     print("Loading model")
     startTime = time.time()
     # model = whisper.load_model("turbo", device="cuda")
+    # ^ uncomment to save RAM when not transcribing ^
     print(f"Model loaded in {time.time() - startTime} seconds")
 
     startTime = time.time()
@@ -42,6 +70,9 @@ def recordAudio():
     global recording
     sampleRate = 44100
     channels = 1
+
+    # show the red dot while recording
+    showRecordingIndicator()
 
     buffer = []  # buffer to save the recording chunks to
 
@@ -69,6 +100,7 @@ def recordAudio():
 
     recording = False
     stopRecording.clear()
+    hideRecordingIndicator()
 
     # start a transcription thread
     transcriptionThread = threading.Thread(target=transcribeAudio)
@@ -105,4 +137,6 @@ def main():
         listener.join()
 
 
-main()
+threading.Thread(target=main, daemon=True).start()
+
+root.mainloop()
