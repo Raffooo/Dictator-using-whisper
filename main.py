@@ -6,13 +6,17 @@ import threading
 from pynput import keyboard
 from pynput.keyboard import Controller
 import time
+import os
 import tkinter as tk
+
+if not os.path.exists("recordings"):
+    os.makedirs("recordings")
 
 recording = False
 recordingThread = None
 stopRecording = threading.Event()
 keyboardPresser = Controller()
-model = whisper.load_model("turbo", device="cuda")
+# model = whisper.load_model("turbo", device="cuda")
 # ^ comment to save RAM while not transcribing ^
 
 # use tkinter to add a red 'recording' icon in the top left
@@ -47,10 +51,10 @@ def simulateKeypress(key):
 
 
 def transcribeAudio():
-    global model
+    # global model
     print("Loading model")
     startTime = time.time()
-    # model = whisper.load_model("turbo", device="cuda")
+    model = whisper.load_model("turbo", device="cuda")
     # ^ uncomment to save RAM when not transcribing ^
     print(f"Model loaded in {time.time() - startTime} seconds")
 

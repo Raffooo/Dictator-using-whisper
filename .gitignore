@@ -2,3 +2,6 @@
 recordings/output.wav
 .idea
 output
+dist
+main.spec
+build
