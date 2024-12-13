@@ -1,6 +1,9 @@
-numpy
+numpy~=1.26.3
 whisper
-sounddevice
-wavio
-pynput
+sounddevice~=0.5.1
+wavio~=0.0.9
+pynput~=1.7.7
 tkinter
+openai-whisper~=20240930
+pystray~=0.19.5
+pillow~=10.2.0

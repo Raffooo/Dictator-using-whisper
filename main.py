@@ -8,6 +8,10 @@ from pynput.keyboard import Controller
 import time
 import os
 import tkinter as tk
+import pystray
+from pystray import MenuItem as item
+from PIL import Image
+import sys
 
 if not os.path.exists("recordings"):
     os.makedirs("recordings")
@@ -142,5 +146,32 @@ def main():
 
 
 threading.Thread(target=main, daemon=True).start()
+
+# make an icon in the system tray
+
+def resourcePath(relativePath):
+    """ Get the absolute path to a resource, works for dev and for PyInstaller. """
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller extracts to _MEIPASS
+        return os.path.join(sys._MEIPASS, relativePath)
+    return os.path.join(os.path.abspath("."), relativePath)
+
+# Use user's own image (ensure 'icon.png' is placed in the same directory)
+trayImage = Image.open(resourcePath("icon.png"))
+
+def onQuit(icon, item):
+    icon.stop()
+    root.quit()
+
+icon = pystray.Icon(
+    "Dictator",
+    trayImage,
+    "Speak, and I will type.",
+    menu=pystray.Menu(
+        item("Quit", onQuit)
+    )
+)
+
+icon.run_detached()
 
 root.mainloop()
