@@ -12,6 +12,8 @@ import pystray
 from pystray import MenuItem as item
 from PIL import Image
 import sys
+import warnings
+
 
 if not os.path.exists("recordings"):
     os.makedirs("recordings")
@@ -56,17 +58,18 @@ def simulateKeypress(key):
 
 def transcribeAudio():
     # global model
-    print("Loading model")
-    startTime = time.time()
+    # # print("Loading model")
+    # startTime = time.time()
+    warnings.filterwarnings("ignore", category=FutureWarning)
     model = whisper.load_model("turbo", device="cuda")
     # ^ uncomment to save RAM when not transcribing ^
-    print(f"Model loaded in {time.time() - startTime} seconds")
+    # print(f"Model loaded in {time.time() - startTime} seconds")
 
-    startTime = time.time()
-    print("\nStarting transcription")
+    # startTime = time.time()
+    # print("\nStarting transcription")
     transcription = model.transcribe(f"recordings/output.wav")
-    print(f"Transcribed in {time.time() - startTime} seconds")
-    print(transcription["text"] + "\n\n")
+    # print(f"Transcribed in {time.time() - startTime} seconds")
+    # print(transcription["text"] + "\n\n")
 
     # simulate each key press in the transcription
     for char in transcription["text"]:
@@ -74,7 +77,7 @@ def transcribeAudio():
 
 
 def recordAudio():
-    print("Started recording")
+    # print("Started recording")
     global recording
     sampleRate = 44100
     channels = 1
@@ -104,7 +107,7 @@ def recordAudio():
     if buffer:
         fullRecording = np.concatenate(buffer)
         wavio.write(f"recordings/output.wav", fullRecording, rate=44100, sampwidth=2)
-        print("recording complete")
+        # print("recording complete")
 
     recording = False
     stopRecording.clear()
@@ -141,7 +144,7 @@ def main():
         currentKeys.discard(key)
 
     with keyboard.Listener(on_press=onPress, on_release=onRelease) as listener:
-        print("Listening for ctrl+\\ to toggle recording")
+        # # print("Listening for ctrl+\\ to toggle recording")
         listener.join()
 
 
